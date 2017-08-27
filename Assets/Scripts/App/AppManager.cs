@@ -25,6 +25,8 @@ namespace CX.CamTool
 		{
 			camManager.DoUpdate( );
 		}
+
+		
 	}
 
 }
