@@ -8,44 +8,59 @@ namespace CX.CamTool
 {
 	public class CamManager: IDebugDescribable
 	{
-		private WebCamTexture _webCamTexture = null;
-		private int _currentDeviceIndex = -1;
-		private UnityEngine.UI.RawImage _rawImage = null;
-		Material _material = null;
+		public System.Action<WebCamTexture> onCamUpdate;
+		public System.Action onCamImageSizeChanged;
 
-		public CamManager( UnityEngine.UI.RawImage ri )
+		public WebCamTexture webCamTexture
 		{
-			_rawImage = ri;
-			_material = ri.material;
+			get;
+			private set;
+		}
 
-			_webCamTexture = new WebCamTexture( );
+		private int _currentDeviceIndex = -1;
+
+		public CamManager(  )
+		{
+			webCamTexture = new WebCamTexture( );
 
 			for (int i = 0; i < WebCamTexture.devices.Length; i++)
 			{
 				WebCamDevice device = WebCamTexture.devices[i];
-				if (device.isFrontFacing)
+				if (!device.isFrontFacing)
 				{
-//					_webCamTexture.deviceName = device.name;
+					webCamTexture.deviceName = device.name;
 					_currentDeviceIndex = i;
 				}
 			}
 			Debug.Log( this.DebugDescribe( ) );
 
 			PlayCamera( true );
+			camImageSize = new Vector2( webCamTexture.width, webCamTexture.height );
 		}
 
 		public bool IsPlaying
 		{
-			get { return (_webCamTexture != null && _webCamTexture.isPlaying); }
+			get { return (webCamTexture != null && webCamTexture.isPlaying); }
 		}
 
 		public void DoUpdate( )
 		{
-			if (_rawImage != null)
+			if (IsPlaying && webCamTexture.didUpdateThisFrame)
 			{
-				if (IsPlaying)
+				if (camImageSize.x != webCamTexture.width || camImageSize.y != webCamTexture.height)
 				{
-					_material.mainTexture = _webCamTexture;
+					Vector2 newSize = new Vector2( webCamTexture.width, webCamTexture.height );
+					Debug.LogWarning( "WebCamTexture size changed while playing from " + camImageSize
+						+ " to " + newSize );
+					camImageSize = newSize;
+					if (onCamImageSizeChanged != null)
+					{
+						onCamImageSizeChanged(  );
+					}
+				}
+				if (onCamUpdate != null)
+				{
+					onCamUpdate( webCamTexture );
 				}
 			}
 		}
@@ -54,12 +69,18 @@ namespace CX.CamTool
 		{
 			if (b)
 			{
-				_webCamTexture.Play( );
+				webCamTexture.Play( );
 			}
 			else
 			{
-				_webCamTexture.Pause( );
+				webCamTexture.Pause( );
 			}
+		}
+
+		public Vector2 camImageSize
+		{
+			get;
+			private set;
 		}
 
 		#region IDebugDescribable

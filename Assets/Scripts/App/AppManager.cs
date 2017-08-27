@@ -8,8 +8,6 @@ namespace CX.CamTool
 {
 	public class AppManager : Core.Singleton.SingletonSceneLifetime< AppManager >
 	{
-		public UnityEngine.UI.RawImage camDisplayImage;
-
 		public CamManager camManager
 		{
 			get;
@@ -18,7 +16,7 @@ namespace CX.CamTool
 
 		protected override void PostAwake()
 		{
-			camManager = new CamManager( camDisplayImage );
+			camManager = new CamManager( );
 		}
 
 		private void Update()
