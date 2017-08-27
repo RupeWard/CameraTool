@@ -29,7 +29,7 @@
 using System;
 using UnityEngine;
 
-namespace RJWS.Core.Singleton
+namespace Core.Singleton
 {
 
 #region Scene singletons

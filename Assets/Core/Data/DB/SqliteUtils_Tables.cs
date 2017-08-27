@@ -4,12 +4,12 @@ using System.Collections.Generic;
 using Mono.Data.Sqlite;
 using System.Data;
 
-using RJWS.Core.Data;
-using RJWS.Core.DebugDescribable;
+using Core.Data;
+using Core.DebugDescribable;
 
-namespace RJWS.Core.Data
+namespace Core.Data
 {
-	public partial class SqliteUtils : RJWS.Core.Singleton.SingletonApplicationLifetimeLazy<SqliteUtils>
+	public partial class SqliteUtils : Core.Singleton.SingletonApplicationLifetimeLazy<SqliteUtils>
 	{
 		static readonly bool DEBUG_TABLES = true;
 

@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace RJWS.Core.Data
+namespace Core.Data
 {
 	public static class DataHelpers
 	{

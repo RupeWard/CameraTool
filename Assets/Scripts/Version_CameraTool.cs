@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-namespace RJWS.Core.Version
+namespace Core.Version
 {
 	public static partial class Version
 	{

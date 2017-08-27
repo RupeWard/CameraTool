@@ -2,11 +2,11 @@
 using System.Collections;
 using System.Collections.Generic;
 
-using RJWS.Core.DebugDescribable;
+using Core.DebugDescribable;
 using System;
 using System.Text;
 
-namespace RJWS.Core.Data
+namespace Core.Data
 {
 	public abstract class AbstractStringExtractable< T >
 	{

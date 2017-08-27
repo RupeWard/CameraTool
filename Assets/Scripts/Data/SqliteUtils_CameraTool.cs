@@ -6,9 +6,9 @@ using System.Collections;
 using System.Collections.Generic;
 using Mono.Data.Sqlite;
 
-namespace RJWS.Core.Data
+namespace Core.Data
 {
-	public partial class SqliteUtils : RJWS.Core.Singleton.SingletonApplicationLifetimeLazy<SqliteUtils>
+	public partial class SqliteUtils : Core.Singleton.SingletonApplicationLifetimeLazy<SqliteUtils>
 	{
 
 		private void prepareProgressTable( )
@@ -89,7 +89,7 @@ namespace RJWS.Core.Data
 			replace.Parameters.Add( value2Sql );
 
 			id2Sql.Value = SettingsIds.versionNumber;
-			value2Sql.Value = RJWS.Core.Version.Version.versionNumber.ToString( );
+			value2Sql.Value = Core.Version.Version.versionNumber.ToString( );
 			replace.ExecuteNonQuery( );
 
 			//		Debug.Log("Set DB version number to "+AppConfig.version.ToString());

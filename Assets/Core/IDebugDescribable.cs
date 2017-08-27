@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace RJWS.Core.DebugDescribable
+namespace Core.DebugDescribable
 {
 	public interface IDebugDescribable
 	{

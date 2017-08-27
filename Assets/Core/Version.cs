@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 using System.Text.RegularExpressions;
-using RJWS.Core.DebugDescribable;
+using Core.DebugDescribable;
 
-namespace RJWS.Core.Version
+namespace Core.Version
 {
 	public static partial class Version
 	{

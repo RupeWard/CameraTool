@@ -5,11 +5,12 @@ using System.Data;
 using System.Collections;
 using System.Collections.Generic;
 using Mono.Data.Sqlite;
-using RJWS.Core.DebugDescribable;
 
-namespace RJWS.Core.Data
+using Core.DebugDescribable;
+
+namespace Core.Data
 {
-	public partial class SqliteUtils : RJWS.Core.Singleton.SingletonApplicationLifetimeLazy<SqliteUtils>
+	public partial class SqliteUtils : Core.Singleton.SingletonApplicationLifetimeLazy<SqliteUtils>
 	{
 		public static readonly bool DEBUG_SQL = true;
 
@@ -33,7 +34,7 @@ namespace RJWS.Core.Data
 		private int numLoadedDatabases_;
 		//	private static string language;
 
-		private RJWS.Core.Version.Version.VersionNumber previousVersionNumber_ = null;
+		private Core.Version.Version.VersionNumber previousVersionNumber_ = null;
 
 		protected override void PostAwake( )
 		{
@@ -161,16 +162,16 @@ namespace RJWS.Core.Data
 			{
 				Debug.LogError( "null previous version number" );
 			}
-			if (RJWS.Core.Version.Version.DEBUG_VERSION)
+			if (Core.Version.Version.DEBUG_VERSION)
 			{
-				Debug.Log( "THIS VERSION = " + RJWS.Core.Version.Version.versionNumber.DebugDescribe( )
+				Debug.Log( "THIS VERSION = " + Core.Version.Version.versionNumber.DebugDescribe( )
 						  + "\nPREVIOUS = " + previousVersionNumber_.DebugDescribe( )
-						  + " (BEFORE = " + previousVersionNumber_.Before( RJWS.Core.Version.Version.versionNumber ) + " )" );
+						  + " (BEFORE = " + previousVersionNumber_.Before( Core.Version.Version.versionNumber ) + " )" );
 			}
 
 			databaseList_ = new List<string>( );
 
-			if (previousVersionNumber_.Before( RJWS.Core.Version.Version.versionNumber ))
+			if (previousVersionNumber_.Before( Core.Version.Version.versionNumber ))
 			{
 				//			databaseList.Add( language );
 				if (DEBUG_SQL)
@@ -254,7 +255,7 @@ namespace RJWS.Core.Data
 				if (reader.Read( ))
 				{
 					previousVersionString = reader.GetString( 0 );
-					previousVersionNumber_ = new RJWS.Core.Version.Version.VersionNumber( previousVersionString );
+					previousVersionNumber_ = new Core.Version.Version.VersionNumber( previousVersionString );
 				}
 				reader.Close( );
 
@@ -269,7 +270,7 @@ namespace RJWS.Core.Data
 			}
 			if (previousVersionNumber_ == null)
 			{
-				previousVersionNumber_ = new RJWS.Core.Version.Version.VersionNumber( 0, 0, 0, 0 );
+				previousVersionNumber_ = new Core.Version.Version.VersionNumber( 0, 0, 0, 0 );
 				Debug.Log( "No previousVersionNumber, defaulting to " + previousVersionNumber_.ToString( ) );
 			}
 		}
