@@ -63,6 +63,18 @@ namespace CX.CamTool.UI
             ShowMainButtons( true );
 
 			versionText.text = Core.Version.Version.versionNumber.ToString( );
+
+#if UNITY_EDITOR
+			if (uIPanel.rect.width > uIPanel.rect.height)
+			{
+				screenOrientation = ScreenOrientation.LandscapeLeft;
+			}
+			else
+			{
+				screenOrientation = ScreenOrientation.Portrait;
+			}
+			Debug.LogWarning( "Editor screen orientation = " + screenOrientation );
+#endif
 		}
 
 		private void Start()

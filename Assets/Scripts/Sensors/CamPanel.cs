@@ -27,7 +27,7 @@ namespace CX.CamTool.UI
 
 		private void Start()
 		{
-			SetOrientation( 0 );
+			SetOrientation( UIManager.Instance.screenOrientation );
 			UIManager.Instance.onScreenOrientationChanged += SetOrientation;
 			AppManager.Instance.camManager.onCamUpdate += HandleCamUpdate;
 			AppManager.Instance.camManager.onCamImageSizeChanged += HandleCamSizeChanged;
@@ -38,7 +38,9 @@ namespace CX.CamTool.UI
 		{
 			int rightAngles = UIManager.ScreenOrientation2RightAngles( orientation );
 			Debug.Log( "CamPanel.SetOrientation( "+orientation+") = "+ rightAngles + " right angles" );
-
+#if UNITY_EDITOR
+			rightAngles++;
+#endif
 			Vector2 size = new Vector2( UIManager.Instance._screenMaxDim, UIManager.Instance._screenMinDim );
 			Vector2 imSize = AppManager.Instance.camManager.camImageSize;
 
