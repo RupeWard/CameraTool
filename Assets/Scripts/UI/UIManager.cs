@@ -18,6 +18,8 @@ namespace CX.CamTool.UI
 		public GameObject showMainButtonsButton;
 		public GameObject versionPanel;
 
+		public GameObject reorientButton;
+
 		public GyroPanel gyroPanel;
 
 		public UnityEngine.UI.Text versionText;
@@ -62,6 +64,7 @@ namespace CX.CamTool.UI
 
 			gyroPanel.gameObject.SetActive( true );
 
+			reorientButton.SetActive( false );
 			sidePanel.sizeDelta = new Vector2( _buttonSize, _screenMinDim );
 			mainButtonsPanel.sizeDelta = sidePanel.sizeDelta;
             ShowMainButtons( true );
@@ -86,6 +89,7 @@ namespace CX.CamTool.UI
 		private void Start()
 		{
 			SetScreenOrientation( screenOrientation );
+			HandleScreenOrientationSet( );
 			versionPanel.SetActive( true );
 			StartCoroutine( HideVersionCR( ) );
 		}
@@ -101,13 +105,14 @@ namespace CX.CamTool.UI
 			if (Screen.orientation != screenOrientation)
 			{
 				SetScreenOrientation( Screen.orientation );
+				reorientButton.SetActive( true );
 			}
 		}
 
 		private void SetScreenOrientation(ScreenOrientation orientation)
 		{
 			screenOrientation = orientation;
-			HandleScreenOrientationSet( );
+//			HandleScreenOrientationSet( );
 		}
 
 		public static int ScreenOrientation2RightAngles( ScreenOrientation orientation )
@@ -141,7 +146,7 @@ namespace CX.CamTool.UI
 
 		private void HandleScreenOrientationSet()
 		{
-			Debug.Log( "HandleScreenOrientationSet: " + screenOrientation +"\n");			
+			Debug.Log( "\nHandleScreenOrientationSet: " + screenOrientation + "\n" );
 			if (onScreenOrientationChanged != null)
 			{
 				onScreenOrientationChanged( screenOrientation );
@@ -206,6 +211,12 @@ namespace CX.CamTool.UI
 		public void HandleButton_ShowGyro()
 		{
 			gyroPanel.Show( );
+		}
+
+		public void HandleButton_Reorient()
+		{
+			reorientButton.SetActive( false );
+			HandleScreenOrientationSet( );
 		}
 	}
 }

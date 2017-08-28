@@ -50,7 +50,7 @@ namespace CX.CamTool
 				if (camImageSize.x != webCamTexture.width || camImageSize.y != webCamTexture.height)
 				{
 					Vector2 newSize = new Vector2( webCamTexture.width, webCamTexture.height );
-					Debug.LogWarning( "WebCamTexture size changed while playing from " + camImageSize
+					Debug.LogWarning( "\nWebCamTexture size changed while playing from " + camImageSize
 						+ " to " + newSize );
 					camImageSize = newSize;
 					if (onCamImageSizeChanged != null)
@@ -87,7 +87,7 @@ namespace CX.CamTool
 
 		public void DebugDescribe( System.Text.StringBuilder sb)
 		{
-			sb.Append( "WebCamManager: " + WebCamTexture.devices.Length + " cameras" );
+			sb.Append( "\nWebCamManager: " + WebCamTexture.devices.Length + " cameras" );
 			if (WebCamTexture.devices.Length > 0)
 			{
 				sb.Append( ":" );

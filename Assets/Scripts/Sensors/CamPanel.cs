@@ -37,7 +37,10 @@ namespace CX.CamTool.UI
 		private void SetOrientation(ScreenOrientation orientation)
 		{
 			int rightAngles = UIManager.ScreenOrientation2RightAngles( orientation );
-			Debug.Log( "CamPanel.SetOrientation( "+orientation+") = "+ rightAngles + " right angles" );
+			Debug.Log( "\nCamPanel.SetOrientation( "+orientation+") = "+ rightAngles + " right angles"
+				+ "WCT: vra=" + AppManager.Instance.camManager.webCamTexture.videoRotationAngle 
+				+ "\n     vvm="+ AppManager.Instance.camManager.webCamTexture.videoVerticallyMirrored+"\n" );
+						
 #if UNITY_EDITOR
 			rightAngles++;
 #endif
@@ -57,7 +60,7 @@ namespace CX.CamTool.UI
 			_camImageRT.sizeDelta = size;
 			_camImageRT.localRotation = Quaternion.Euler( rotEuler );
 
-			Debug.Log( "Set camImage size = " + _camImageRT.sizeDelta
+			Debug.Log( "\nSet camImage size = " + _camImageRT.sizeDelta
 				+ ", cam texture size = " + AppManager.Instance.camManager.webCamTexture.width + ", " + AppManager.Instance.camManager.webCamTexture.height );
         }
 
