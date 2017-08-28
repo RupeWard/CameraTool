@@ -14,9 +14,16 @@ namespace CX.CamTool
 			private set;
 		} 
 
+		public GyroManager gyroManager
+		{
+			get;
+			private set;
+		}
+
 		protected override void PostAwake()
 		{
 			camManager = new CamManager( );
+			gyroManager = new GyroManager( );
 		}
 
 		private void Update()

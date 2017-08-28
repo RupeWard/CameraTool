@@ -17,3 +17,4 @@ TO DO
 - Enable camera freeze and image save
 - Enable associated image info save
 - Add (custom) associated image info
+- ? Alphaed UI
