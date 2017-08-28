@@ -11,4 +11,9 @@ Requirements
 
 - portait or landscape
 
+TO DO
 
+- Obtain, calibrate, and display gyro info
+- Enable camera freeze and image save
+- Enable associated image info save
+- Add (custom) associated image info
