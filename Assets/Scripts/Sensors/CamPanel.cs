@@ -90,7 +90,7 @@ namespace CX.CamTool.UI
 			rightAngles++;
 #endif
 			Vector2 size = new Vector2( UIManager.Instance._screenMaxDim, UIManager.Instance._screenMinDim );
-			Vector2 imSize = AppManager.Instance.camManager.camImageSize;
+            Vector2 imSize = new Vector2((float)AppManager.Instance.camManager.camImageWidth, (float)AppManager.Instance.camManager.camImageHeight);
 
 			if (size.x/size.y > imSize.x/imSize.y)
 			{

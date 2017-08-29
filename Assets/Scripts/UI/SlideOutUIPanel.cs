@@ -14,7 +14,12 @@ namespace CX.CamTool.UI
             private set;
         }
 
-        private float _size = 0f;
+        public float size
+        {
+            get;
+            private set;
+        }
+
         public bool isShowing
         {
             get;
@@ -34,8 +39,8 @@ namespace CX.CamTool.UI
         public void Init(bool showing = false)
         {
             RectTransform parentRT = transform.parent.GetComponent<RectTransform>();
-            _size = parentRT.sizeDelta.y;
-            cachedRT.sizeDelta = new Vector2(_size, _size);
+            size = parentRT.sizeDelta.y;
+            cachedRT.sizeDelta = new Vector2(size, size);
 
             DoInit(showing);
             Show(showing, true);
@@ -45,7 +50,8 @@ namespace CX.CamTool.UI
 
         public void Show(bool showing, bool immediate)
         {
-            float xPos = (showing) ? (0f) : (-1f * _size);
+            cachedRT.DOKill();
+            float xPos = (showing) ? (0f) : (-1f * size);
             float duration = (immediate) ? (0f) : (UIManager.Instance.tweenTime);
             cachedRT.DOAnchorPosX(xPos, duration).SetEase(Ease.InOutQuad);
             isShowing = showing;

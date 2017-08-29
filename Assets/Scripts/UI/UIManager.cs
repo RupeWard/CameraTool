@@ -18,7 +18,6 @@ namespace CX.CamTool.UI
 		public RectTransform mainButtonsPanel;
 		public RectTransform sidePanel;
 		public GameObject showMainButtonsButton;
-		public GameObject versionPanel;
 
 		public GameObject reorientButton;
 
@@ -28,7 +27,6 @@ namespace CX.CamTool.UI
         public UnityEngine.UI.Text versionText;
 
 		public float tweenTime = 0.5f;
-		public float versionShowTime = 5f;
 
         private List<SlideOutUIPanel> _slideOutPanels = new List<SlideOutUIPanel>();
         public void RegisterSlideOutPanel(SlideOutUIPanel panel)
@@ -122,14 +120,12 @@ namespace CX.CamTool.UI
 		{
 			SetScreenOrientation( screenOrientation );
 			HandleScreenOrientationSet( );
-			versionPanel.SetActive( true );
 			StartCoroutine( HideVersionCR( ) );
 		}
 
 		private IEnumerator HideVersionCR()
 		{
 			yield return new WaitForSeconds( 5f );
-			versionPanel.SetActive( false );
 		}
 
 		private void Update()
@@ -228,11 +224,6 @@ namespace CX.CamTool.UI
 		public void HandleButton_Quit( )
 		{
 			Application.Quit( );
-		}
-
-		public void HandleButton_Version( )
-		{
-			versionPanel.SetActive( !versionPanel.activeSelf );
 		}
 
 		public void HandleButton_Test()

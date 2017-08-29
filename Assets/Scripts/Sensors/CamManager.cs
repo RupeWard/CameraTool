@@ -34,7 +34,57 @@ namespace CX.CamTool
             private set;
         }
 
+        public int[] _doNotAccessCamImageSize = null;
+
+        public int[] camImageSize
+        {
+            get
+            {
+                if (_doNotAccessCamImageSize == null)
+                {
+                    _doNotAccessCamImageSize = new int[2];
+                }
+                return _doNotAccessCamImageSize;
+            }
+        }
+
+        public float camImageWidth
+        {
+            get 
+            {
+                return camImageSize[0];
+            }
+        }
+
+        public float camImageHeight
+        {
+            get
+            {
+                return camImageSize[1];
+            }
+        }
+
+        private bool SetCamImageSize(int w, int h)
+        {
+            bool changed = false;
+            if (camImageSize[0] != w)
+            {
+                camImageSize[0] = w;
+                changed = true;
+            }
+            if (camImageSize[1] != h)
+            {
+                camImageSize[1] = h;
+                changed = true;
+            }
+            return changed;
+        }
+
         private int _currentDeviceIndex = -1;
+
+        private void Awake()
+        {
+        }
 
         public bool Init(float timeOutSecs, System.Action<bool> onCamInitialised)
         {
@@ -87,7 +137,8 @@ namespace CX.CamTool
                     Debug.Log("CamPanel requesting " + requestedResolution[0] + "x" + requestedResolution[1] + "\n");
                 }
                 PlayCamera(true);
-                camImageSize = new Vector2(webCamTexture.width, webCamTexture.height);
+                camImageSize[0] = webCamTexture.width;
+                camImageSize[1] = webCamTexture.height;
                 StartCoroutine(WaitForCameraInitialisationCR(timeOutSecs, onCamInitialised));
             }
             return success;
@@ -95,6 +146,8 @@ namespace CX.CamTool
 
         private IEnumerator WaitForCameraInitialisationCR(float timeOutSecs, System.Action<bool> onCamInitialised)
         {
+            MessageBus.Instance.SendConsoleMessage("Initialising Camera...", true, true);
+
             Debug.Log("CamManager: waiting for "+timeOutSecs+"s");
             float startTime = Time.time;
 
@@ -113,11 +166,14 @@ namespace CX.CamTool
                 eCameraInitialisationState = ECameraInitialisationState.READY;
                 Debug.Log("CamManager: camera initialised after "+(Time.time-startTime)+"s at "+webCamTexture.width+"x"+webCamTexture.height
                           +"\nWith VVM="+webCamTexture.videoVerticallyMirrored+", VRA="+webCamTexture.videoRotationAngle);
+                SetCamImageSize(webCamTexture.width, webCamTexture.height);
+                MessageBus.Instance.SendConsoleMessage("Camera initialised at "+ webCamTexture.width + "x" + webCamTexture.height, true, true);
             }
             else
             {
                 eCameraInitialisationState = ECameraInitialisationState.FAILED;
                 Debug.LogError("CamManager: camera failed to initialise after " + (Time.time - startTime) + "s");
+                MessageBus.Instance.SendConsoleMessage("CAMERA FAILED TO INITIALISE", true, true);
             }
             if (onCamInitialised != null)
             {
@@ -145,12 +201,11 @@ namespace CX.CamTool
 		{
             if (eCameraInitialisationState == ECameraInitialisationState.READY && IsPlaying && webCamTexture.didUpdateThisFrame)
 			{
-				if (camImageSize.x != webCamTexture.width || camImageSize.y != webCamTexture.height) // fp comparison ok because we set these values
+                if (SetCamImageSize(webCamTexture.width,webCamTexture.height)) 
 				{
-					Vector2 newSize = new Vector2( webCamTexture.width, webCamTexture.height );
-					Debug.LogWarning( "WebCamTexture size changed while playing, from " + camImageSize
-						+ " to " + newSize );
-					camImageSize = newSize;
+                    Debug.LogWarning( "WebCamTexture size changed while playing, to " + camImageWidth+"x"+camImageHeight);
+                    MessageBus.Instance.SendConsoleMessage("WebCamTexture size changed while playing, to " 
+                                                           +camImageWidth + "x" + camImageHeight, true, false);
 					if (onCamImageSizeChanged != null)
 					{
 						onCamImageSizeChanged(  );
@@ -173,12 +228,6 @@ namespace CX.CamTool
 			{
 				webCamTexture.Pause( );
 			}
-		}
-
-		public Vector2 camImageSize
-		{
-			get;
-			private set;
 		}
 
 #region IDebugDescribable
