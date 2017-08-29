@@ -8,7 +8,7 @@ namespace CX.CamTool
 	{
 		public GyroManager()
 		{
-			Initialise( );
+			Initialise( ); 
 		}
 
 		public void Initialise()
