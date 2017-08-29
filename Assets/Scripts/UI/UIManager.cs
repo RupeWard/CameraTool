@@ -23,8 +23,9 @@ namespace CX.CamTool.UI
 		public GameObject reorientButton;
 
 		public GyroPanel gyroPanel;
+        public LogPanel logPanel;
 
-		public UnityEngine.UI.Text versionText;
+        public UnityEngine.UI.Text versionText;
 
 		public float tweenTime = 0.5f;
 		public float versionShowTime = 5f;
@@ -66,6 +67,7 @@ namespace CX.CamTool.UI
 			_screenMaxDim = Mathf.Max( uIPanel.rect.width, uIPanel.rect.height );
 
 			gyroPanel.gameObject.SetActive( true );
+            logPanel.gameObject.SetActive(true);
 
 			reorientButton.SetActive( false );
 			sidePanel.sizeDelta = new Vector2( _buttonSize, _screenMinDim );
@@ -75,6 +77,7 @@ namespace CX.CamTool.UI
 			versionText.text = Core.Version.Version.versionNumber.ToString( );
 
 			gyroPanel.Init( );
+            logPanel.Init();
 
 #if UNITY_EDITOR
 			if (uIPanel.rect.width > uIPanel.rect.height)
@@ -161,13 +164,14 @@ namespace CX.CamTool.UI
 		public void ShowMainButtons(bool immediate = false)
 		{
 			HideShowMainButtonsButton( );
-			mainButtonsPanel.DOAnchorPosY( 0f, (immediate)?(0f):(tweenTime) );
+            mainButtonsPanel.DOAnchorPosY( 0f, (immediate)?(0f):(tweenTime) ).SetEase(Ease.InOutQuad);
 		}
 
 		public void HideMainButtons( bool immediate = false )
 		{
 			mainButtonsPanel.DOAnchorPosY( mainButtonsPanel.sizeDelta.y, 
-				(immediate) ? (0f) : (tweenTime) ).OnComplete(ShowShowMainButtonsButton);
+				(immediate) ? (0f) : (tweenTime) ).OnComplete(ShowShowMainButtonsButton)
+                            .SetEase(Ease.InOutQuad);
 		}
 
 		private void ShowShowMainButtonsButton( )
@@ -218,7 +222,12 @@ namespace CX.CamTool.UI
 			gyroPanel.ShowTween( );
 		}
 
-		public void HandleButton_Reorient()
+        public void HandleButton_ShowLog()
+        {
+            logPanel.ShowTween();
+        }
+
+        public void HandleButton_Reorient()
 		{
 			reorientButton.SetActive( false );
 			HandleScreenOrientationSet( );

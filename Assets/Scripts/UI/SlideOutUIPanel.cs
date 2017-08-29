@@ -42,7 +42,7 @@ namespace CX.CamTool.UI
         {
             float xPos = (showing) ? (0f) : (-1f * _size);
             float duration = (immediate) ? (0f) : (UIManager.Instance.tweenTime);
-            cachedRT.DOAnchorPosX(xPos, duration);
+            cachedRT.DOAnchorPosX(xPos, duration).SetEase(Ease.InOutQuad);
             isShowing = showing;
         }
 
