@@ -6,7 +6,7 @@ using Core.DebugDescribable;
 
 namespace CX.CamTool
 {
-	public class CamManager: IDebugDescribable
+    public class CamManager: MonoBehaviour, IDebugDescribable
 	{
 		public System.Action<WebCamTexture> onCamUpdate;
 		public System.Action onCamImageSizeChanged;
@@ -18,11 +18,33 @@ namespace CX.CamTool
 			private set;
 		}
 
+        public enum ECameraInitialisationState
+        {
+            PENDING,
+            READY,
+            FAILED
+        }
+
+        public ECameraInitialisationState eCameraInitialisationState
+        {
+            get;
+            private set;
+        }
+
 		private int _currentDeviceIndex = -1;
 
-		public CamManager(  )
+        private void Awake()
+        {
+        }
+
+        public bool Init( float maxWaitTimeSecs, System.Action<bool> onCamInitialised)
 		{
-			webCamTexture = new WebCamTexture( );
+            bool success = true;
+
+            webCamTexture = new WebCamTexture();
+            _currentDeviceIndex = -1;
+
+            eCameraInitialisationState = ECameraInitialisationState.PENDING;
 
 			for (int i = 0; i < WebCamTexture.devices.Length; i++)
 			{
@@ -33,24 +55,81 @@ namespace CX.CamTool
 					_currentDeviceIndex = i;
 				}
 			}
-			webCamTexture.requestedWidth = requestedResolution[0];
-			webCamTexture.requestedHeight = requestedResolution[1];
-			Debug.Log( "\nCamPanel requesting "+requestedResolution[0]+"x"+ requestedResolution[1]+"\n" );
 
-			Debug.Log( this.DebugDescribe( ) );
+            if (_currentDeviceIndex == -1)
+            {
+                if (WebCamTexture.devices.Length == 1)
+                {
+                    Debug.LogWarning("CamManager Only found one camera, using it!");
+                    WebCamDevice device = WebCamTexture.devices[0];
+                    webCamTexture.deviceName = device.name;
+                    _currentDeviceIndex = 0;
+                }
+                else
+                {
+                    Debug.LogError("CamManager FOUND NO CAMERA");
+                    success = false;
+                }
+            }
 
-			PlayCamera( true );
-			camImageSize = new Vector2( webCamTexture.width, webCamTexture.height );
+            if (success)
+            {
+                webCamTexture.requestedWidth = requestedResolution[0];
+                webCamTexture.requestedHeight = requestedResolution[1];
+                Debug.Log("\nCamPanel requesting " + requestedResolution[0] + "x" + requestedResolution[1] + "\n");
+
+                Debug.Log(this.DebugDescribe());
+
+                PlayCamera(true);
+                camImageSize = new Vector2(webCamTexture.width, webCamTexture.height);
+                StartCoroutine(WaitForCameraInitialisationCR(maxWaitTimeSecs, onCamInitialised));
+            }
+            return success;
 		}
+
+        private IEnumerator WaitForCameraInitialisationCR(float maxWaitTimeSecs, System.Action<bool> onCamInitialised)
+        {
+            Debug.Log("CamManager: waiting for "+maxWaitTimeSecs+"s");
+            float startTime = Time.time;
+
+            bool bReady = false;
+
+            while (!bReady && (Time.time - startTime) < maxWaitTimeSecs)
+            {
+                yield return new WaitForSeconds(1f);
+                if (webCamTexture.width > 16)
+                {
+                    bReady = true;
+                }
+            }
+            if (bReady)
+            {
+                eCameraInitialisationState = ECameraInitialisationState.READY;
+                Debug.Log("CamManager: camera initialised after "+(Time.time-startTime)+"s at "+webCamTexture.width+"x"+webCamTexture.height);
+            }
+            else
+            {
+                eCameraInitialisationState = ECameraInitialisationState.FAILED;
+                Debug.LogError("CamManager: camera failed to initialise after " + (Time.time - startTime) + "s");
+            }
+            if (onCamInitialised != null)
+            {
+                onCamInitialised(bReady);
+            }
+            else
+            {
+                Debug.LogWarning("CamManager has no onCamInitialised callback defined");
+            }
+        }
 
 		public bool IsPlaying
 		{
 			get { return (webCamTexture != null && webCamTexture.isPlaying); }
 		}
 
-		public void DoUpdate( )
+		public void Update( )
 		{
-			if (IsPlaying && webCamTexture.didUpdateThisFrame)
+            if (eCameraInitialisationState == ECameraInitialisationState.READY && IsPlaying && webCamTexture.didUpdateThisFrame)
 			{
 				if (camImageSize.x != webCamTexture.width || camImageSize.y != webCamTexture.height)
 				{

@@ -25,14 +25,39 @@ namespace CX.CamTool.UI
 			camImage.material = _camImageMaterial;
 		}
 
-		private void Start()
+        private void Start()
+        {
+			StartCoroutine(WaitForCameraReadyCR());
+        }
+
+		private void Init()
 		{
 			SetOrientation( UIManager.Instance.screenOrientation );
-			UIManager.Instance.onScreenOrientationChanged += SetOrientation;
-			AppManager.Instance.camManager.onCamUpdate += HandleCamUpdate;
-			AppManager.Instance.camManager.onCamImageSizeChanged += HandleCamSizeChanged;
-			UIManager.Instance.onTestButtonClicked += ToggleCamImageSize;
+
+            UIManager.Instance.onScreenOrientationChanged -= SetOrientation;
+            UIManager.Instance.onScreenOrientationChanged += SetOrientation;
+
+            AppManager.Instance.camManager.onCamUpdate -= HandleCamUpdate;
+            AppManager.Instance.camManager.onCamUpdate += HandleCamUpdate;
+
+            AppManager.Instance.camManager.onCamImageSizeChanged -= HandleCamSizeChanged;
+            AppManager.Instance.camManager.onCamImageSizeChanged += HandleCamSizeChanged;
+
+            UIManager.Instance.onTestButtonClicked -= ToggleCamImageSize;
+            UIManager.Instance.onTestButtonClicked += ToggleCamImageSize;
 		}
+
+        private IEnumerator WaitForCameraReadyCR()
+        {
+            while (AppManager.Instance.camManager.eCameraInitialisationState == CamManager.ECameraInitialisationState.PENDING)
+            {
+            	yield return new WaitForSeconds(0.5f);
+            }
+			if (AppManager.Instance.camManager.eCameraInitialisationState == CamManager.ECameraInitialisationState.READY)
+			{
+				Init();
+			}
+        }
 
 		private void SetOrientation(ScreenOrientation orientation)
 		{
@@ -66,7 +91,8 @@ namespace CX.CamTool.UI
 
 		public void HandleCamUpdate(WebCamTexture webCamTexture)
 		{
-			_camImageMaterial.mainTexture = webCamTexture;
+            camImage.texture = webCamTexture;
+//			_camImageMaterial.mainTexture = webCamTexture;
 		}
 
 		public void HandleCamSizeChanged()

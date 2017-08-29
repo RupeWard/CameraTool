@@ -8,6 +8,7 @@ namespace CX.CamTool
 {
 	public class AppManager : Core.Singleton.SingletonSceneLifetime< AppManager >
 	{
+		public float initialisationFailTime = 20f;
 		public CamManager camManager
 		{
 			get;
@@ -22,14 +23,15 @@ namespace CX.CamTool
 
 		protected override void PostAwake()
 		{
-			camManager = new CamManager( );
+			GameObject camManagerGO = new GameObject("CamManager");
+			camManagerGO.transform.SetParent(this.transform);
+			camManager = camManagerGO.AddComponent<CamManager>();
+
 			gyroManager = new GyroManager( );
+
+			camManager.Init(initialisationFailTime, null);
 		}
 
-		private void Update()
-		{
-			camManager.DoUpdate( );
-		}
 
 		
 	}

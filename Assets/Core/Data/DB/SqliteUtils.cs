@@ -296,7 +296,7 @@ namespace Core.Data
 			File.WriteAllBytes( dbPath, wwwFile.bytes );
 
 #if UNITY_IPHONE
-		iPhone.SetNoBackupFlag( dataBasePath );
+            UnityEngine.iOS.Device.SetNoBackupFlag( dbPath );
 #endif
 
 			//Check if we have loaded all databases

@@ -17,22 +17,27 @@ namespace Core.Version
 		public static string platformLabel
 		{
 			get
-			{
+            {
 #if UNITY_EDITOR
-				return editorLabel;
+                return editorLabel;
 #elif UNITY_ANDROID
 			return androidLabel;
 #elif UNITY_IOS
 			return iosLabel;
+#elif UNITY_STANDALONE_OSX
+                return osxLabel;
+#else
+                return "UNKNOWNPLATFORM";
 #endif
-			}
+            }
 		}
 
 		public static string editorLabel = "edt";
 		public static string androidLabel = "and";
 		public static string iosLabel = "ios";
+        public static string osxLabel = "osx";
 
-		public static readonly bool DEBUG_VERSION = true;
+        public static readonly bool DEBUG_VERSION = true;
 
 		// TODO: may need to make the build version of this more clever later on
 		public static bool IsProductionVersion
