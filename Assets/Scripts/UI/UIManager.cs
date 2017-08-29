@@ -215,7 +215,7 @@ namespace CX.CamTool.UI
 
 		public void HandleButton_ShowGyro()
 		{
-			gyroPanel.Show( );
+			gyroPanel.ShowTween( );
 		}
 
 		public void HandleButton_Reorient()

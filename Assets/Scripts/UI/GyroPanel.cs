@@ -6,7 +6,7 @@ using DG.Tweening;
 
 namespace CX.CamTool.UI
 {
-	public class GyroPanel : MonoBehaviour
+    public class GyroPanel : SlideOutUIPanel
 	{
 		public GameObject noGyroPanel;
 		public GameObject yesGyroPanel;
@@ -15,30 +15,11 @@ namespace CX.CamTool.UI
 		public UnityEngine.UI.Text attYDegText;
 		public UnityEngine.UI.Text attZDegText;
 
-		private bool _isShowing = false;
-
 		private Gyroscope _gyro = null;
 		private bool _isAvailable = false;
 
-		public RectTransform cachedRT
+		protected override void DoInit(bool showing)
 		{
-			get;
-			private set;
-		}
-
-		private float _size = 0f;
-
-		private void Awake()
-		{
-			cachedRT = GetComponent<RectTransform>( );
-		}
-
-		public void Init()
-		{
-			RectTransform parentRT = transform.parent.GetComponent<RectTransform>( );
-			_size = parentRT.sizeDelta.y;
-            cachedRT.sizeDelta = new Vector2( _size, _size );
-
 			_isAvailable = SystemInfo.supportsGyroscope;
             if (_isAvailable)
 			{
@@ -49,13 +30,11 @@ namespace CX.CamTool.UI
 			}
 			yesGyroPanel.SetActive( _isAvailable);
 			noGyroPanel.SetActive( !_isAvailable );
-
-			Hide( true );
 		}
 
 		private void Update()
 		{
-			if (_isAvailable && _isShowing)
+			if (_isAvailable && isShowing)
 			{
 				Vector3 attEuler = Input.gyro.attitude.eulerAngles;
 
@@ -65,22 +44,6 @@ namespace CX.CamTool.UI
 			}
 		}
 
-		public void Hide(bool immediate = false)
-		{
-			cachedRT.DOAnchorPosX( -1f * _size, (immediate) ? (0f) : (UIManager.Instance.tweenTime) );
-			_isShowing = false;
-        }
-
-		public void Show( bool immediate = false )
-		{
-			cachedRT.DOAnchorPosX( 0f, (immediate) ? (0f) : (UIManager.Instance.tweenTime) );
-			_isShowing = true;
-		}
-
-		public void HandleButton_Hide()
-		{
-			Hide( );
-		}
 	}
 }
 
