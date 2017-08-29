@@ -6,17 +6,20 @@ using Core.DebugDescribable;
 
 namespace CX.CamTool
 {
-    public class CamManager: MonoBehaviour, IDebugDescribable
-	{
-		public System.Action<WebCamTexture> onCamUpdate;
-		public System.Action onCamImageSizeChanged;
+    public class CamManager : MonoBehaviour, IDebugDescribable
+    {
+        static public readonly bool DEBUG_CAMMANAGER = true;
 
-		public int[] requestedResolution = new int[2] { 2000, 2000 };
-		public WebCamTexture webCamTexture
-		{
-			get;
-			private set;
-		}
+        public System.Action<WebCamTexture> onCamUpdate;
+        public System.Action onCamImageSizeChanged;
+
+        public int[] requestedResolution = new int[2] { 2000, 2000 };
+
+        public WebCamTexture webCamTexture
+        {
+            get;
+            private set;
+        }
 
         public enum ECameraInitialisationState
         {
@@ -31,14 +34,10 @@ namespace CX.CamTool
             private set;
         }
 
-		private int _currentDeviceIndex = -1;
+        private int _currentDeviceIndex = -1;
 
-        private void Awake()
+        public bool Init(float timeOutSecs, System.Action<bool> onCamInitialised)
         {
-        }
-
-        public bool Init( float maxWaitTimeSecs, System.Action<bool> onCamInitialised)
-		{
             bool success = true;
 
             webCamTexture = new WebCamTexture();
@@ -46,21 +45,28 @@ namespace CX.CamTool
 
             eCameraInitialisationState = ECameraInitialisationState.PENDING;
 
-			for (int i = 0; i < WebCamTexture.devices.Length; i++)
-			{
-				WebCamDevice device = WebCamTexture.devices[i];
-				if (!device.isFrontFacing)
-				{
-					webCamTexture.deviceName = device.name;
-					_currentDeviceIndex = i;
-				}
-			}
+            for (int i = 0; i < WebCamTexture.devices.Length; i++)
+            {
+                WebCamDevice device = WebCamTexture.devices[i];
+                if (!device.isFrontFacing)
+                {
+                    webCamTexture.deviceName = device.name;
+                    _currentDeviceIndex = i;
+                }
+            }
 
             if (_currentDeviceIndex == -1)
             {
                 if (WebCamTexture.devices.Length == 1)
                 {
-                    Debug.LogWarning("CamManager Only found one camera, using it!");
+#if UNITY_EDITOR
+                    if (DEBUG_CAMMANAGER)
+                    {
+                        Debug.LogWarning("CamManager using front camera: expected in editor)");
+                    }
+#else
+                    Debug.LogWarning("CamManager only found one camera (front-facing), using it regardless!");
+#endif
                     WebCamDevice device = WebCamTexture.devices[0];
                     webCamTexture.deviceName = device.name;
                     _currentDeviceIndex = 0;
@@ -76,25 +82,25 @@ namespace CX.CamTool
             {
                 webCamTexture.requestedWidth = requestedResolution[0];
                 webCamTexture.requestedHeight = requestedResolution[1];
-                Debug.Log("\nCamPanel requesting " + requestedResolution[0] + "x" + requestedResolution[1] + "\n");
-
-                Debug.Log(this.DebugDescribe());
-
+                if (DEBUG_CAMMANAGER)
+                {
+                    Debug.Log("CamPanel requesting " + requestedResolution[0] + "x" + requestedResolution[1] + "\n");
+                }
                 PlayCamera(true);
                 camImageSize = new Vector2(webCamTexture.width, webCamTexture.height);
-                StartCoroutine(WaitForCameraInitialisationCR(maxWaitTimeSecs, onCamInitialised));
+                StartCoroutine(WaitForCameraInitialisationCR(timeOutSecs, onCamInitialised));
             }
             return success;
 		}
 
-        private IEnumerator WaitForCameraInitialisationCR(float maxWaitTimeSecs, System.Action<bool> onCamInitialised)
+        private IEnumerator WaitForCameraInitialisationCR(float timeOutSecs, System.Action<bool> onCamInitialised)
         {
-            Debug.Log("CamManager: waiting for "+maxWaitTimeSecs+"s");
+            Debug.Log("CamManager: waiting for "+timeOutSecs+"s");
             float startTime = Time.time;
 
             bool bReady = false;
 
-            while (!bReady && (Time.time - startTime) < maxWaitTimeSecs)
+            while (!bReady && (Time.time - startTime) < timeOutSecs)
             {
                 yield return new WaitForSeconds(1f);
                 if (webCamTexture.width > 16)
@@ -105,7 +111,8 @@ namespace CX.CamTool
             if (bReady)
             {
                 eCameraInitialisationState = ECameraInitialisationState.READY;
-                Debug.Log("CamManager: camera initialised after "+(Time.time-startTime)+"s at "+webCamTexture.width+"x"+webCamTexture.height);
+                Debug.Log("CamManager: camera initialised after "+(Time.time-startTime)+"s at "+webCamTexture.width+"x"+webCamTexture.height
+                          +"\nWith VVM="+webCamTexture.videoVerticallyMirrored+", VRA="+webCamTexture.videoRotationAngle);
             }
             else
             {
@@ -120,6 +127,10 @@ namespace CX.CamTool
             {
                 Debug.LogWarning("CamManager has no onCamInitialised callback defined");
             }
+            if (DEBUG_CAMMANAGER)
+            {
+                Debug.Log(this.DebugDescribe());
+            }
         }
 
 		public bool IsPlaying
@@ -131,10 +142,10 @@ namespace CX.CamTool
 		{
             if (eCameraInitialisationState == ECameraInitialisationState.READY && IsPlaying && webCamTexture.didUpdateThisFrame)
 			{
-				if (camImageSize.x != webCamTexture.width || camImageSize.y != webCamTexture.height)
+				if (camImageSize.x != webCamTexture.width || camImageSize.y != webCamTexture.height) // fp comparison ok because we set these values
 				{
 					Vector2 newSize = new Vector2( webCamTexture.width, webCamTexture.height );
-					Debug.LogWarning( "\nWebCamTexture size changed while playing from " + camImageSize
+					Debug.LogWarning( "WebCamTexture size changed while playing, from " + camImageSize
 						+ " to " + newSize );
 					camImageSize = newSize;
 					if (onCamImageSizeChanged != null)
@@ -167,7 +178,7 @@ namespace CX.CamTool
 			private set;
 		}
 
-		#region IDebugDescribable
+#region IDebugDescribable
 
 		public void DebugDescribe( System.Text.StringBuilder sb)
 		{
@@ -199,7 +210,7 @@ namespace CX.CamTool
 			}
 			sb.Append( "\n" );
 		}
-		#endregion IDebugDescribable
+#endregion IDebugDescribable
 
 	}
 }

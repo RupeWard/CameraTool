@@ -8,6 +8,8 @@ namespace CX.CamTool.UI
 {
 	public class UIManager : Core.Singleton.SingletonSceneLifetime< UIManager>
 	{
+        static public readonly bool DEBUG_UI = true;
+
 		public System.Action<float> onButtonSizeChanged;
 		public System.Action<ScreenOrientation> onScreenOrientationChanged;
 		public System.Action onTestButtonClicked;
@@ -34,6 +36,7 @@ namespace CX.CamTool.UI
 		}
 
 		public float _screenMinDim, _screenMaxDim;
+
 		private float _buttonSize = 120f;
 		public float buttonSize
 		{
@@ -43,7 +46,7 @@ namespace CX.CamTool.UI
 			}
 			private set
 			{
-				if (value != _buttonSize)
+				if (value != _buttonSize) // fp comparison ok here because we set it
 				{
 					_buttonSize = value;
 					if (onButtonSizeChanged != null)
@@ -82,7 +85,7 @@ namespace CX.CamTool.UI
 			{
 				screenOrientation = ScreenOrientation.Portrait;
 			}
-			Debug.LogWarning( "Editor screen orientation = " + screenOrientation );
+			Debug.Log( "Editor screen orientation = " + screenOrientation );
 #endif
 		}
 
@@ -112,7 +115,6 @@ namespace CX.CamTool.UI
 		private void SetScreenOrientation(ScreenOrientation orientation)
 		{
 			screenOrientation = orientation;
-//			HandleScreenOrientationSet( );
 		}
 
 		public static int ScreenOrientation2RightAngles( ScreenOrientation orientation )
@@ -146,7 +148,10 @@ namespace CX.CamTool.UI
 
 		private void HandleScreenOrientationSet()
 		{
-			Debug.Log( "\nHandleScreenOrientationSet: " + screenOrientation + "\n" );
+            if (DEBUG_UI)
+            {
+                Debug.Log("\nHandleScreenOrientationSet: " + screenOrientation + "\n");
+            }
 			if (onScreenOrientationChanged != null)
 			{
 				onScreenOrientationChanged( screenOrientation );

@@ -31,9 +31,6 @@ namespace CX.CamTool
 
 			camManager.Init(initialisationFailTime, null);
 		}
-
-
-		
 	}
 
 }
