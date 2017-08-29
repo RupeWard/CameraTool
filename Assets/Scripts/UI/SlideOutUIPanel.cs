@@ -26,6 +26,11 @@ namespace CX.CamTool.UI
             cachedRT = GetComponent<RectTransform>();
         }
 
+        protected virtual void Start()
+        {
+            UIManager.Instance.RegisterSlideOutPanel(this);
+        }
+
         public void Init(bool showing = false)
         {
             RectTransform parentRT = transform.parent.GetComponent<RectTransform>();
@@ -44,6 +49,7 @@ namespace CX.CamTool.UI
             float duration = (immediate) ? (0f) : (UIManager.Instance.tweenTime);
             cachedRT.DOAnchorPosX(xPos, duration).SetEase(Ease.InOutQuad);
             isShowing = showing;
+            UIManager.Instance.HandleSlideOutPanelIsShowing(this, showing);
         }
 
         public void ShowImmediate()

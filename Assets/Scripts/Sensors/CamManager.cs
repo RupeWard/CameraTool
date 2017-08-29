@@ -62,7 +62,7 @@ namespace CX.CamTool
 #if UNITY_EDITOR
                     if (DEBUG_CAMMANAGER)
                     {
-                        Debug.LogWarning("CamManager using front camera: expected in editor)");
+                        Debug.Log("CamManager using front camera: expected in editor)");
                     }
 #else
                     Debug.LogWarning("CamManager only found one camera (front-facing), using it regardless!");
@@ -125,7 +125,10 @@ namespace CX.CamTool
             }
             else
             {
-                Debug.LogWarning("CamManager has no onCamInitialised callback defined");
+                if (DEBUG_CAMMANAGER)
+                {
+                    Debug.Log("CamManager has no onCamInitialised callback defined");
+                }
             }
             if (DEBUG_CAMMANAGER)
             {

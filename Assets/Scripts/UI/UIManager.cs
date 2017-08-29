@@ -30,6 +30,35 @@ namespace CX.CamTool.UI
 		public float tweenTime = 0.5f;
 		public float versionShowTime = 5f;
 
+        private List<SlideOutUIPanel> _slideOutPanels = new List<SlideOutUIPanel>();
+        public void RegisterSlideOutPanel(SlideOutUIPanel panel)
+        {
+            if (_slideOutPanels.Contains(panel))
+            {
+                Debug.LogError("UIManager already registered " + panel.gameObject.name);
+            }
+            else
+            {
+                _slideOutPanels.Add(panel);
+                panel.Init();
+            }
+        }
+
+        public SlideOutUIPanel currentSlideOutPanel
+        {
+            get;
+            private set;
+        }
+
+        public void HandleSlideOutPanelIsShowing(SlideOutUIPanel panel, bool showing)
+        {
+            if (currentSlideOutPanel != null && currentSlideOutPanel != panel)
+            {
+                currentSlideOutPanel.HideImmediate();
+            }
+            currentSlideOutPanel = panel;
+        }
+
 		public ScreenOrientation screenOrientation
 		{
 			get;
@@ -75,9 +104,6 @@ namespace CX.CamTool.UI
             ShowMainButtons( true );
 
 			versionText.text = Core.Version.Version.versionNumber.ToString( );
-
-			gyroPanel.Init( );
-            logPanel.Init();
 
 #if UNITY_EDITOR
 			if (uIPanel.rect.width > uIPanel.rect.height)
