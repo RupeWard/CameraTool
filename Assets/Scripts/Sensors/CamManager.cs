@@ -11,6 +11,7 @@ namespace CX.CamTool
 		public System.Action<WebCamTexture> onCamUpdate;
 		public System.Action onCamImageSizeChanged;
 
+		public int[] requestedResolution = new int[2] { 2000, 2000 };
 		public WebCamTexture webCamTexture
 		{
 			get;
@@ -32,6 +33,10 @@ namespace CX.CamTool
 					_currentDeviceIndex = i;
 				}
 			}
+			webCamTexture.requestedWidth = requestedResolution[0];
+			webCamTexture.requestedHeight = requestedResolution[1];
+			Debug.Log( "\nCamPanel requesting "+requestedResolution[0]+"x"+ requestedResolution[1]+"\n" );
+
 			Debug.Log( this.DebugDescribe( ) );
 
 			PlayCamera( true );

@@ -38,7 +38,7 @@ namespace CX.CamTool.UI
 		{
 			int rightAngles = UIManager.ScreenOrientation2RightAngles( orientation );
 			Debug.Log( "\nCamPanel.SetOrientation( "+orientation+") = "+ rightAngles + " right angles"
-				+ "WCT: vra=" + AppManager.Instance.camManager.webCamTexture.videoRotationAngle 
+				+ "\nWCT: vra=" + AppManager.Instance.camManager.webCamTexture.videoRotationAngle 
 				+ "\n     vvm="+ AppManager.Instance.camManager.webCamTexture.videoVerticallyMirrored+"\n" );
 						
 #if UNITY_EDITOR
